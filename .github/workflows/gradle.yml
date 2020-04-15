@@ -12,39 +12,6 @@ on:
     branches: [ master ]
 
 jobs:
-  kubernetes-build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: engineerd/setup-kind@v0.3.0
-    - name: Testing
-      run: |
-        kubectl cluster-info
-        kubectl get pods -n kube-system
-        echo "current-context:" $(kubectl config current-context)
-        echo "environment-kubeconfig:" ${KUBECONFIG}
-        curl -L https://istio.io/downloadIstio | sh -
-        export PATH=$PWD/istio-1.5.1/bin:$PATH
-        
-        istioctl manifest apply --set profile=default
-
-        kubectl create namespace quarkus &
-        kubectl apply -f <(istioctl kube-inject -f src/main/kube/app.yaml) -n quarkus
-        kubectl apply -f src/main/kube/gateway.yaml
-        kubectl apply -f src/main/kube/authentication-policy.yaml
-        sleep 15
-        kubectl get services --all-namespaces
-        kubectl get pods --all-namespaces
-        kubectl get svc istio-ingressgateway -n istio-system
-
-        export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
-        export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].nodePort}')
-
-        export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
-        echo $GATEWAY_URL
-        
-        curl http://$GATEWAY_URL/login.html
-
   build:
     runs-on: ubuntu-latest
 
