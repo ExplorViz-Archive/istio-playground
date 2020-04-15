@@ -19,7 +19,7 @@ jobs:
       with:
         java-version: 11
     - name: Build the native executables
-      run: ./gradlew buildNative
+      run: ./gradlew buildNative --docker-build=true
     - name: Build the image  
       uses: docker/build-push-action@v1
       with:
