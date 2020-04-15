@@ -24,7 +24,8 @@ jobs:
       uses: docker/build-push-action@v1
       with:
         username: ${{ github.actor }}
-        password: ${{ github.token }}
+        password: ${{ secrets.GITHUB_TOKEN }}
         dockerfile: src/main/docker/Dockerfile.native
-        repository: docker.pkg.github.com/explorviz/istio-playground/native
+        registry: docker.pkg.github.com
+        repository: explorviz/istio-playground/native
         tags: latest
