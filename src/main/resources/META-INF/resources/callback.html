@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<script src="https://cdn.auth0.com/js/auth0/9.11/auth0.min.js"></script>
+<script src="webauth.js"></script>
+
+<head>
+    <meta charset="utf-8">
+    <title>Github auth example</title>
+</head>
+
+<body>
+    <h1>Received token</h1>
+    <p id="github-token">Github auth example</p>
+    <h1>This should not display a secret</h1>
+    <p id="secret-without-token">Because it does not specify a token.</p>
+    <h1>This should display a secret because it uses the token</h1>
+    <p id="secret-with-token">But sadly it does not. Are you logged in?</p>
+
+    <a href="login.html">Login page</a>
+    <a href="asecret.html">A completely secret page</a>
+    <a href="callback.html">A page with secret elements</a>
+</body>
+
+<script type="text/javascript">
+    webAuth.parseHash({ hash: window.location.hash }, function (err, authResult) {
+        if (err || !authResult) {
+            return console.log(err);
+        }
+
+        // The contents of authResult depend on which authentication parameters were used.
+        // It can include the following:
+        // authResult.accessToken - access token for the API specified by `audience`
+        // authResult.expiresIn - string with the access token's expiration time in seconds
+        // authResult.idToken - ID token JWT containing user profile information
+        localStorage.setItem("accessToken", authResult.accessToken);
+        webAuth.client.userInfo(authResult.accessToken, function (err, user) {
+            // Now you have the user's information
+        });
+    });
+
+    function removeHash() {
+        history.pushState("", document.title, window.location.pathname
+            + window.location.search);
+    }
+
+    removeHash();
+
+    accessToken = localStorage.getItem("accessToken");
+    document.getElementById('github-token').innerHTML = accessToken
+
+    fetch('secret', {
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${accessToken}` // Access Token
+        }
+    }).then(response => {
+        return response.json();
+    }).then(data => {
+        document.getElementById('secret-with-token').innerHTML = data.theSecret;
+    }).catch(err => {
+        // Do something for an error here
+    });
+
+    fetch('secret').then(response => {
+        return response.json();
+    }).then(data => {
+        document.getElementById('secret-without-token').innerHTML = data.theSecret;
+    }).catch(err => {
+        // Do something for an error here
+    });
+
+</script>
+
+</html>

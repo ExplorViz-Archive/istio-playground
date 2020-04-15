@@ -1,0 +1,30 @@
+<script src="https://cdn.auth0.com/js/auth0/9.11/auth0.min.js"></script>
+<script src="webauth.js"></script>
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <title>Github auth example</title>
+</head>
+
+<body>
+    <h1>Github auth example</h1>
+    <p id="counter">To access "secret" resources</p>
+    <input id="myButton" type="button" class="btn btn-default btn-sm login-github" value="Login with Github" />
+    <a href="login.html">Login page</a>
+    <a href="asecret.html">A completely secret page</a>
+    <a href="callback.html">A page with secret elements</a>
+</body>
+
+<script type="text/javascript">
+    const button = document.getElementById('myButton');
+    button.addEventListener('click', function (e) {
+        webAuth.authorize({ connection: 'github', responseType: 'token' })
+            , function (err, authResult) {
+                //do something
+            };
+    });
+
+</script>
+</html>

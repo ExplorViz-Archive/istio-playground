@@ -1,0 +1,77 @@
+plugins {
+    id 'java'
+    id 'io.quarkus'
+    id "com.google.cloud.tools.minikube" version "1.0.0-alpha.3"
+}
+
+repositories {
+     mavenLocal()
+     mavenCentral()
+}
+
+dependencies {
+    implementation 'io.quarkus:quarkus-resteasy-jsonb'
+    implementation enforcedPlatform("${quarkusPlatformGroupId}:${quarkusPlatformArtifactId}:${quarkusPlatformVersion}")
+    implementation 'io.quarkus:quarkus-resteasy'
+
+    testImplementation 'io.quarkus:quarkus-junit5'
+    testImplementation 'io.rest-assured:rest-assured'
+}
+
+group 'net.explorviz'
+version '0.1'
+
+compileJava {
+    options.encoding = 'UTF-8'
+    options.compilerArgs << '-parameters'
+}
+
+compileTestJava {
+    options.encoding = 'UTF-8'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+minikubeStart {
+    flags = ["--vm-driver=kvm2", "--memory=16384", "--cpus=4", "--kubernetes-version=v1.18.0"]
+}
+
+task istioctlStart(type: Exec) {
+    commandLine 'istioctl', 'manifest', 'apply', '--set', 'profile=default'
+}
+
+task playgroundBuildImage(type: Exec) {
+    dependsOn 'quarkusBuild'
+    commandLine 'scripts/application-tasks-wrapper.sh', 'build-image-in-minikube'
+    tasks.findByName('playgroundBuildImage').mustRunAfter 'quarkusBuild'
+}
+
+task playgroundDeploy(type: Exec) {
+    dependsOn 'playgroundBuildImage'
+    commandLine 'scripts/application-tasks-wrapper.sh', 'deploy'
+    tasks.findByName('playgroundDeploy').mustRunAfter 'playgroundBuildImage'
+}
+
+task playgroundSetupGateway(type: Exec) {
+    commandLine 'kubectl', 'apply', '-f', 'src/main/kube/gateway.yaml'
+}
+
+task playgroundSetupAuthenticationPolicy(type: Exec) {
+    commandLine 'kubectl', 'apply', '-f', 'src/main/kube/authentication-policy.yaml'
+}
+
+task playgroundInitialSetup {
+    dependsOn 'minikubeStart'
+    dependsOn 'istioctlStart'
+    dependsOn 'playgroundBuildImage'
+    dependsOn 'playgroundDeploy'
+    dependsOn 'playgroundSetupGateway'
+    dependsOn 'playgroundSetupAuthenticationPolicy'
+    tasks.findByName('istioctlStart').mustRunAfter 'minikubeStart'
+    tasks.findByName('playgroundDeploy').mustRunAfter 'istioctlStart'
+    tasks.findByName('playgroundSetupGateway').mustRunAfter 'playgroundDeploy'
+    tasks.findByName('playgroundSetupAuthenticationPolicy').mustRunAfter 'playgroundDeploy'
+}
