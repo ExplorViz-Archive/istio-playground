@@ -37,13 +37,16 @@ jobs:
         kubectl apply -f <(istioctl kube-inject -f src/main/kube/app.yaml) -n quarkus
         kubectl apply -f src/main/kube/gateway.yaml
         kubectl apply -f src/main/kube/authentication-policy.yaml
-        sleep 15
+        sleep 25
         kubectl get services --all-namespaces
         kubectl get pods --all-namespaces
         kubectl get svc istio-ingressgateway -n istio-system
 
+
         export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
         export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].nodePort}')
+        export INGRESS_HOST=$(kubectl get po -l istio=ingressgateway -n istio-system -o jsonpath='{.items[0].status.hostIP}')
+
 
         export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
         echo $GATEWAY_URL
