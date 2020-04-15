@@ -12,10 +12,10 @@ public class SecureResourceTest {
     @Test
     public void testHelloEndpoint() {
         given()
-          .when().get("/hello")
+          .when().get("/secret")
           .then()
              .statusCode(200)
-             .body(is("hello"));
+             .body(is("{\"theSecret\": \"This is a secret page\"}"));
     }
 
 }
