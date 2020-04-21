@@ -1,0 +1,21 @@
+name: Test local istio action
+
+on:
+  push:
+    branches: 
+     - istio-actions
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  test-istio:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    # - uses: engineerd/setup-kind@v0.3.0
+    - name: Start istio
+      uses: ./.github/actions # Uses an action in the root directory
+      id: start-istio
+      with:
+        who-to-greet: 'Mona the Octocat'
+
