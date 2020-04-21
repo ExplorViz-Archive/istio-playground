@@ -17,10 +17,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: engineerd/setup-kind@v0.3.0
-    - name: Setup istio
-      uses: ./.github/actions/setup-istio # Uses an action in the root directory
-      id: setup-istio
+    # - uses: engineerd/setup-kind@v0.3.0
+    # - name: Setup istio
+      # uses: ./.github/actions/setup-istio # Uses an action in the root directory
+      # id: setup-istio
     
     - name: Testing
       run: |
