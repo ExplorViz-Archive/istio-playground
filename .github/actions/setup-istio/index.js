@@ -16,9 +16,9 @@ async function installIstio() {
     await toolCache.extractTar(downloadIstioScript, tempDirectory);
   
     const toolPath = await toolCache.cacheDir(tempDirectory, "istio", version);
-    core.addPath(cachedPath);
-    core.debug(`istio is cached under ${toolPath}`);
     core.addPath(path.join(toolPath, 'bin'));
+    core.debug(`istio is cached under ${toolPath}`);
+    
   } catch (error) {
     core.setFailed(error.message);
   }
