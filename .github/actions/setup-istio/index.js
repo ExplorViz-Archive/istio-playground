@@ -8,7 +8,7 @@ async function installIstio() {
     console.log(`Installing istio`);
     const version = '1.5.1'
     const OSEXT = 'linux'
-    const url = `https://github.com/istio/istio/releases/download/${ISTIO_VERSION}/istio-${ISTIO_VERSION}-${OSEXT}.tar.gz`
+    const url = `https://github.com/istio/istio/releases/download/${version}/istio-${version}-${OSEXT}.tar.gz`
     const downloadIstioScript = await toolCache.downloadTool(url);
   
     const tempDirectory = path.join('home', 'actions', 'temp');
