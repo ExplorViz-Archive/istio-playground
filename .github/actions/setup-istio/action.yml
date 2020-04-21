@@ -1,13 +1,10 @@
 name: 'Hello World'
 description: 'Install istio'
 inputs:
-  who-to-greet:  # id of input
-    description: 'Who to greet'
+  version:  # id of input
+    description: 'Istio version'
     required: false
-    default: 'World'
-outputs:
-  time: # id of output
-    description: 'The time we greeted you'
+    default: '1.5.1'
 runs:
   using: 'node12'
   main: 'index.js'
