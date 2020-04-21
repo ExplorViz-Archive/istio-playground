@@ -24,7 +24,7 @@ jobs:
     
     - name: Testing
       run: |
-        cat ${{ secrets.GITHUB_TOKEN }} | docker login dockerkg.github.com -u ${{ github.actor }} --password-stdin
+        docker login dockerkg.github.com -u ${{ github.actor }} -p ${{ secrets.GITHUB_TOKEN }}
         docker pull docker.pkg.github.com/explorviz/istio-playground/native:latest
         kind load docker-image docker.pkg.github.com/explorviz/istio-playground/native:latest
 
