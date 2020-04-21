@@ -23,15 +23,11 @@ jobs:
     - uses: engineerd/setup-kind@v0.3.0
     - name: Testing
       run: |
+        ls -la /opt/hostedtoolcache/istio/1.5.1/x64
         echo "::group::Download image to use" 
         echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
         docker pull docker.pkg.github.com/explorviz/istio-playground/native:latest
         kind load docker-image docker.pkg.github.com/explorviz/istio-playground/native:latest
-        echo "::endgroup::"
-
-        echo "::group::Start istio with default profile" 
-        istioctl manifest apply --set profile=default
-        kubectl cluster-info
         echo "::endgroup::"
 
         kubectl create namespace quarkus

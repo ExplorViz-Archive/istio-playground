@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
+const exec = require('@actions/exec');
 const toolCache = require('@actions/tool-cache');
 const path = require('path');
 
@@ -18,13 +19,15 @@ async function installIstio() {
     await toolCache.extractTar(downloadIstioScript, tempDirectory);
   
     const toolPath = await toolCache.cacheDir(tempDirectory, "istio", version);
-    console.log(`Addingn to path: ${toolPath}`);
-    core.addPath(path.join(toolPath, 'bin'));
-    core.debug(`istio is cached under ${toolPath}`);
+    const binPath = path.join(toolPath, 'bin');
+    console.log(`Adding to path: ${binPath}`);
+    core.addPath(binPath);
+    core.debug(`istio is cached under ${binPath}`);
     
+    await exec.exec('istioctl manifest apply --set profile=default');
   } catch (error) {
     core.setFailed(error.message);
   }
 }
 
-installIstio()
+installIstio();
