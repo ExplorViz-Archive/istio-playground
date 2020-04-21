@@ -24,7 +24,6 @@ jobs:
     
     - name: Testing
       run: |
-        ls -la /opt/hostedtoolcache/istio/1.5.1/x64
         echo "::group::Download image to use" 
         echo ${{ secrets.GITHUB_TOKEN }} | docker login dockerkg.github.com -u ${{ github.actor }} --password-stdin
         docker pull docker.pkg.github.com/explorviz/istio-playground/native:latest
