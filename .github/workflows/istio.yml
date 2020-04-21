@@ -34,7 +34,6 @@ jobs:
         kubectl cluster-info
         echo "::endgroup::"
 
-        echo "::group::Start istio-playground"
         kubectl create namespace quarkus
         kubectl label namespace quarkus istio-injection=enabled
 
