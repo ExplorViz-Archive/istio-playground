@@ -14,7 +14,7 @@ jobs:
     - uses: actions/checkout@v2
     # - uses: engineerd/setup-kind@v0.3.0
     - name: Start istio
-      uses: ./.github/actions # Uses an action in the root directory
+      uses: ./.github/actions/setup-istio # Uses an action in the root directory
       id: start-istio
       with:
         who-to-greet: 'Mona the Octocat'
