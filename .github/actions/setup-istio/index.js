@@ -18,13 +18,11 @@ async function installIstio() {
     const tempDirectory = path.join('home', 'actions', 'temp');
     await toolCache.extractTar(downloadIstioScript, tempDirectory);
     const istioDirectory = path.join(tempDirectory, `istio-${version}`);
-    
     const toolPath = await toolCache.cacheDir(istioDirectory, "istio", version);
     const binPath = path.join(toolPath, 'bin');
-    console.log(`Adding to path: ${binPath}`);
     core.addPath(binPath);
     core.debug(`istio is cached under ${binPath}`);
-    await exec.exec(`ls -la ${binPath}`);
+    
     await exec.exec('istioctl manifest apply --set profile=default');
   } catch (error) {
     core.setFailed(error.message);
