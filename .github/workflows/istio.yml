@@ -47,6 +47,6 @@ jobs:
         export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
         echo $GATEWAY_URL
         
-        curl -s http://$GATEWAY_URL/login.html
-        curl -s http://$GATEWAY_URL/asecret.html
+        curl -s http://$GATEWAY_URL/login.html | grep "Login page"
+        curl -s http://$GATEWAY_URL/asecret.html | grep "RBAC: access denied"
 
