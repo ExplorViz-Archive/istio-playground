@@ -1,9 +1,10 @@
-const core = require('@actions/core');
-const github = require('@actions/github');
-const toolCache = require('@actions/tool-cache');
-const exec = require('@actions/exec');
+
 
 async function installIstio() {
+  const core = require('@actions/core');
+  const github = require('@actions/github');
+  const toolCache = require('@actions/tool-cache');
+  const exec = require('@actions/exec');
   try {
     // `who-to-greet` input defined in action metadata file
     console.log(`Installing istio`);
