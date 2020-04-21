@@ -1,6 +1,7 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
 const toolCache = require('@actions/tool-cache');
+const path = require('path');
 
 async function installIstio() {
   try {
@@ -17,7 +18,7 @@ async function installIstio() {
     const toolPath = await tc.cacheDir(tempDirectory, "istio", version);
     core.addPath(cachedPath);
     core.debug(`istio is cached under ${toolPath}`);
-    core.addPath(toolPath.join(toolPath, 'bin'));
+    core.addPath(path.join(toolPath, 'bin'));
   } catch (error) {
     core.setFailed(error.message);
   }
