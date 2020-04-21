@@ -17,7 +17,6 @@ async function installIstio() {
     console.log(`Installing istio.`);
     const tempDirectory = path.join('home', 'actions', 'temp');
     await toolCache.extractTar(downloadIstioScript, tempDirectory);
-    await exec.exec(`ls -la ${binPath}`);
     
     const toolPath = await toolCache.cacheDir(tempDirectory, "istio-", version);
     const binPath = path.join(toolPath, 'bin');
