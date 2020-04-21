@@ -22,7 +22,8 @@ async function installIstio() {
     const binPath = path.join(toolPath, 'bin');
     core.addPath(binPath);
     core.debug(`istio is cached under ${binPath}`);
-    
+
+    console.log(`Starting istio.`);
     await exec.exec('istioctl manifest apply --set profile=default');
   } catch (error) {
     core.setFailed(error.message);

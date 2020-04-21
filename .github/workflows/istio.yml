@@ -24,11 +24,9 @@ jobs:
     
     - name: Testing
       run: |
-        # echo "::group::Download image to use" 
         echo ${{ secrets.GITHUB_TOKEN }} | docker login dockerkg.github.com -u ${{ github.actor }} --password-stdin
         docker pull docker.pkg.github.com/explorviz/istio-playground/native:latest
         kind load docker-image docker.pkg.github.com/explorviz/istio-playground/native:latest
-        # echo "::endgroup::"
 
         kubectl create namespace quarkus
         kubectl label namespace quarkus istio-injection=enabled
