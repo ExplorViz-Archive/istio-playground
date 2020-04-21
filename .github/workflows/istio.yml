@@ -17,22 +17,25 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - uses: engineerd/setup-kind@v0.3.0
+    - name: Start istio
+      uses: ./.github/actions # Uses an action in the root directory
+      id: start-istio
+      with:
+        who-to-greet: 'Mona the Octocat'
     - name: Testing
       run: |
         kubectl cluster-info
-        kubectl get pods -n kube-system
-        echo "current-context:" $(kubectl config current-context)
-        echo "environment-kubeconfig:" ${KUBECONFIG}
-
         echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
         docker pull docker.pkg.github.com/explorviz/istio-playground/native:latest
         kind load docker-image docker.pkg.github.com/explorviz/istio-playground/native:latest
 
-        curl -L https://istio.io/downloadIstio | sh -
+        echo "::group::Download and start istio" 
+        curl -s -L https://istio.io/downloadIstio | sh - /dev/null
         export PATH=$PWD/istio-1.5.1/bin:$PATH
-        
         istioctl manifest apply --set profile=default
+        echo "::endgroup::"
 
+        echo "::group::Start istio-playground"
         kubectl create namespace quarkus
         kubectl label namespace quarkus istio-injection=enabled
 
@@ -48,7 +51,6 @@ jobs:
         export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
         export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].nodePort}')
         export INGRESS_HOST=$(kubectl get po -l istio=ingressgateway -n istio-system -o jsonpath='{.items[0].status.hostIP}')
-
 
         export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
         echo $GATEWAY_URL
