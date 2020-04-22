@@ -2,7 +2,9 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ master ]
+    branches: 
+      - master
+      - istio-actions
   pull_request:
     branches: [ master ]
 
@@ -26,11 +28,12 @@ jobs:
         java-version: 11
     - name: Build the jvm executables
       run: ./gradlew ${{ matrix.gradleTask }}
-    - uses: whoan/docker-build-with-cache-action@v5
+    - name: Build the image  
+      uses: docker/build-push-action@v1
       with:
         username: ${{ github.actor }}
-        password: "${{ secrets.GITHUB_TOKEN }}"
-        image_name: explorviz/istio-playground/${{ matrix.mode }}
-        image_tag: latest
-        registry: docker.pkg.github.com
+        password: ${{ secrets.GITHUB_TOKEN }}
         dockerfile: src/main/docker/Dockerfile.${{ matrix.mode }}
+        registry: docker.pkg.github.com
+        repository: explorviz/istio-playground/${{ matrix.mode }}
+        tags: latest

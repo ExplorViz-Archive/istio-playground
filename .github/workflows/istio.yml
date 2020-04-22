@@ -24,9 +24,9 @@ jobs:
     - name: Build the executables
       run: ./gradlew quarkusBuild
     - name: Build jvm image for local use
+      # echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+      # docker pull -q --all-tags docker.pkg.github.com/explorviz/istio-playground/jvm-stages || true
       run: |
-        echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
-        docker pull --all-tags docker.pkg.github.com/explorviz/istio-playground/jvm-stages || true
         docker build -f src/main/docker/Dockerfile.jvm -t docker.pkg.github.com/explorviz/istio-playground/jvm:latest .
     - uses: engineerd/setup-kind@v0.3.0
     - name: Setup istio
