@@ -35,7 +35,8 @@ jobs:
     - name: Setup istio
       uses: ./.github/actions/setup-istio
       id: setup-istio
-    - name: Start istio-playground
+    - id: startIstio
+      name: Start istio-playground
       run: |
         kind load docker.pkg.github.com/explorviz/istio-playground/jvm:latest
 
@@ -55,10 +56,12 @@ jobs:
         export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].nodePort}')
         export INGRESS_HOST=$(kubectl get po -l istio=ingressgateway -n istio-system -o jsonpath='{.items[0].status.hostIP}')
 
-        export GATEWAY_URL=$INGRESS_HOST:$INGRESS_PORT
-        echo $GATEWAY_URL
+        echo "::set-env name=gateway_url::$INGRESS_HOST:$INGRESS_PORT"
     - name: Test accessibility of pages
-      run: |    
+      run: |
+        GATEWAY_URL=${{env.gateway_url}}
+        echo $GATEWAY_URL
+        
         curl -s http://$GATEWAY_URL/login.html | grep "Login page"
         curl -s http://$GATEWAY_URL/asecret.html | grep "RBAC: access denied"
 
