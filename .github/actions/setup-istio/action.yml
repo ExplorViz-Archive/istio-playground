@@ -1,0 +1,10 @@
+name: 'Hello World'
+description: 'Install istio'
+inputs:
+  version:  # id of input
+    description: 'Istio version'
+    required: false
+    default: '1.5.1'
+runs:
+  using: 'node12'
+  main: 'index.js'

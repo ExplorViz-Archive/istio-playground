@@ -2,7 +2,7 @@
 
 build-image-in-minikube() {
   eval $(minikube docker-env)
-  docker build -f src/main/docker/Dockerfile.jvm -t net/explorviz/istio-playground .
+  docker build -f src/main/docker/Dockerfile.jvm -t docker.pkg.github.com/explorviz/istio-playground/jvm:latest .
 }
 
 deploy() {

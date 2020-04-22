@@ -12,27 +12,6 @@ on:
     branches: [ master ]
 
 jobs:
-  kubernetes-build:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
-    - uses: engineerd/setup-kind@v0.3.0
-    - name: Testing
-      run: |
-        kubectl cluster-info
-        kubectl get pods -n kube-system
-        echo "current-context:" $(kubectl config current-context)
-        echo "environment-kubeconfig:" ${KUBECONFIG}
-        curl -L https://istio.io/downloadIstio | sh -
-        cd istio-1.5.1
-        export PATH=$PWD/bin:$PATH
-        istioctl manifest apply --set profile=demo
-        kubectl apply -f samples/bookinfo/platform/kube/bookinfo.yaml
-        sleep 10
-        kubectl get services
-        kubectl get pods
-        kubectl exec -it $(kubectl get pod -l app=ratings -o jsonpath='{.items[0].metadata.name}') -c ratings -- curl productpage:9080/productpage | grep -o "<title>.*</title>"
-
   build:
     runs-on: ubuntu-latest
 

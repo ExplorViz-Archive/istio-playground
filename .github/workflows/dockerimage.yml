@@ -2,30 +2,38 @@ name: Docker Image CI
 
 on:
   push:
-    branches: [ master ]
+    branches: 
+      - master
   pull_request:
-    branches: [ master ]
+    branches: 
+     - master
 
 jobs:
-
   build:
-
     runs-on: ubuntu-latest
-
+    strategy:
+      matrix:
+        mode: [jvm, native]
+        include:
+          # includes a new variable of npm with a value of 2 for the matrix leg matching the os and version
+          - mode: jvm
+            gradleTask: quarkusBuild
+          - mode: native
+            gradleTask: buildNative --docker-build=true
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK 11
       uses: actions/setup-java@v1
       with:
         java-version: 11
-    - name: Build the native executables
-      run: ./gradlew buildNative --docker-build=true
+    - name: Build the jvm executables
+      run: ./gradlew ${{ matrix.gradleTask }}
     - name: Build the image  
       uses: docker/build-push-action@v1
       with:
         username: ${{ github.actor }}
         password: ${{ secrets.GITHUB_TOKEN }}
-        dockerfile: src/main/docker/Dockerfile.native
+        dockerfile: src/main/docker/Dockerfile.${{ matrix.mode }}
         registry: docker.pkg.github.com
-        repository: explorviz/istio-playground/native
+        repository: explorviz/istio-playground/${{ matrix.mode }}
         tags: latest
