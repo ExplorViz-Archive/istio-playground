@@ -38,6 +38,8 @@ jobs:
     - id: startIstio
       name: Start istio-playground
       run: |
+        echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+        docker pull docker.pkg.github.com/explorviz/istio-playground/jvm:latest
         kind load docker.pkg.github.com/explorviz/istio-playground/jvm:latest
 
         kubectl create namespace quarkus
@@ -59,9 +61,6 @@ jobs:
         echo "::set-env name=gateway_url::$INGRESS_HOST:$INGRESS_PORT"
     - name: Test accessibility of pages
       run: |
-        GATEWAY_URL=${{env.gateway_url}}
-        echo $GATEWAY_URL
-        
-        curl -s http://$GATEWAY_URL/login.html | grep "Login page"
-        curl -s http://$GATEWAY_URL/asecret.html | grep "RBAC: access denied"
+        curl -s http://${{env.gateway_url}}/login.html | grep "Login page"
+        curl -s http://${{env.gateway_url}}/asecret.html | grep "RBAC: access denied"
 
