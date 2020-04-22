@@ -2,11 +2,13 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: quarkus-test
+  namespace: quarkus
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: quarkus-test
+  namespace: quarkus
   labels:
     app: quarkus-test
 spec:
@@ -21,6 +23,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: quarkus-test
+  namespace: quarkus
 spec:
   replicas: 1
   selector:

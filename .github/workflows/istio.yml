@@ -42,26 +42,22 @@ jobs:
     - id: startIstio
       name: Start istio-playground
       run: |
-        docker images
         echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
         docker pull docker.pkg.github.com/explorviz/istio-playground/jvm:latest
-        kind load docker image docker.pkg.github.com/explorviz/istio-playground/jvm:latest
+        kind load docker-image docker.pkg.github.com/explorviz/istio-playground/jvm:latest
 
         kubectl create namespace quarkus
         kubectl label namespace quarkus istio-injection=enabled
 
-        kubectl apply -f src/main/kube/app.yaml -n quarkus
+        kubectl apply -f src/main/kube/app.yaml
         kubectl apply -f src/main/kube/gateway.yaml
         kubectl apply -f src/main/kube/authentication-policy.yaml
 
-        sleep 25
-        kubectl get services --all-namespaces
-        kubectl get pods --all-namespaces
-        kubectl get svc istio-ingressgateway -n istio-system
+        kubectl wait --for=condition=Ready pod --all -n quarkus --timeout=60s
 
-        export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
-        export SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].nodePort}')
-        export INGRESS_HOST=$(kubectl get po -l istio=ingressgateway -n istio-system -o jsonpath='{.items[0].status.hostIP}')
+        INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
+        SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].nodePort}')
+        INGRESS_HOST=$(kubectl get po -l istio=ingressgateway -n istio-system -o jsonpath='{.items[0].status.hostIP}')
 
         echo "::set-env name=gateway_url::$INGRESS_HOST:$INGRESS_PORT"
     - name: Test accessibility of pages
