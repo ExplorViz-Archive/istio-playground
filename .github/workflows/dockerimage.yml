@@ -2,15 +2,22 @@ name: Docker Image CI
 
 on:
   push:
-    branches: 
-      - master
-      - github-actions
+    branches: [ master ]
   pull_request:
     branches: [ master ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        mode: [jvm, native]
+        include:
+          # includes a new variable of npm with a value of 2 for the matrix leg matching the os and version
+          - mode: jvm
+            gradleTask: quarkusBuild
+          - mode: native
+            gradleTask: buildNative --docker-build=true
     steps:
     - uses: actions/checkout@v2
     - name: Set up JDK 11
@@ -18,22 +25,12 @@ jobs:
       with:
         java-version: 11
     - name: Build the jvm executables
-      run: ./gradlew quarkusBuild
+      run: ./gradlew ${{ matrix.gradleTask }}
     - uses: whoan/docker-build-with-cache-action@v5
       with:
         username: ${{ github.actor }}
         password: "${{ secrets.GITHUB_TOKEN }}"
-        image_name: explorviz/istio-playground/jvm
+        image_name: explorviz/istio-playground/${{ matrix.mode }}
         image_tag: latest
         registry: docker.pkg.github.com
-        dockerfile: src/main/docker/Dockerfile.jvm
-    - name: Build the native executables
-      run: ./gradlew buildNative --docker-build=true
-    - uses: whoan/docker-build-with-cache-action@v5
-      with:
-        username: ${{ github.actor }}
-        password: "${{ secrets.GITHUB_TOKEN }}"
-        image_name: explorviz/istio-playground/native
-        image_tag: latest
-        registry: docker.pkg.github.com
-        dockerfile: src/main/docker/Dockerfile.native
+        dockerfile: src/main/docker/Dockerfile.${{ matrix.mode }}
