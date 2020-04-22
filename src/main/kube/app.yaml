@@ -35,7 +35,7 @@ spec:
     spec:
       serviceAccountName: quarkus-test
       containers:
-      - image: explorviz/istio-playground:latest
+      - image: docker.pkg.github.com/explorviz/istio-playground/jvm:latest
         imagePullPolicy: IfNotPresent
         name: quarkus-test
         ports:

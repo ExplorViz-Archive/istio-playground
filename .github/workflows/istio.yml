@@ -23,15 +23,21 @@ jobs:
         java-version: 11
     - name: Build the executables
       run: ./gradlew quarkusBuild
-    - name: Build the image
-      run: docker build -f src/main/docker/Dockerfile.jvm -t explorviz/istio-playground:latest .
+    - uses: whoan/docker-build-with-cache-action@v5
+      with:
+        username: ${{ github.actor }}
+        password: "${{ secrets.GITHUB_TOKEN }}"
+        image_name: explorviz/istio-playground/jvm
+        image_tag: latest
+        registry: docker.pkg.github.com
+        dockerfile: src/main/docker/Dockerfile.jvm
     - uses: engineerd/setup-kind@v0.3.0
     - name: Setup istio
       uses: ./.github/actions/setup-istio
       id: setup-istio
     - name: Start istio-playground
       run: |
-        kind load docker-image explorviz/istio-playground:latest
+        kind load docker.pkg.github.com/explorviz/istio-playground/jvm:latest
 
         kubectl create namespace quarkus
         kubectl label namespace quarkus istio-injection=enabled
