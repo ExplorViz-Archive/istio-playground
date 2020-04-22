@@ -13,7 +13,7 @@ on:
     branches: [ master ]
 
 jobs:
-  test-istio:
+  build-latest-jvm-image:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -31,6 +31,10 @@ jobs:
         image_tag: latest
         registry: docker.pkg.github.com
         dockerfile: src/main/docker/Dockerfile.jvm
+  test-istio:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
     - uses: engineerd/setup-kind@v0.3.0
     - name: Setup istio
       uses: ./.github/actions/setup-istio
