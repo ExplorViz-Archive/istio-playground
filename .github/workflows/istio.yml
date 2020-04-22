@@ -13,7 +13,7 @@ on:
     branches: [ master ]
 
 jobs:
-  build-latest-jvm-image:
+  test-istio:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
@@ -23,18 +23,11 @@ jobs:
         java-version: 11
     - name: Build the executables
       run: ./gradlew quarkusBuild
-    - uses: whoan/docker-build-with-cache-action@v5
-      with:
-        username: ${{ github.actor }}
-        password: "${{ secrets.GITHUB_TOKEN }}"
-        image_name: explorviz/istio-playground/jvm
-        image_tag: latest
-        registry: docker.pkg.github.com
-        dockerfile: src/main/docker/Dockerfile.jvm
-  test-istio:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v2
+    - name: Build jvm image for local use
+      run: |
+        echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
+        docker pull --all-tags docker.pkg.github.com/explorviz/istio-playground/jvm-stages
+        docker build -f src/main/docker/Dockerfile.jvm -t docker.pkg.github.com/explorviz/istio-playground/jvm:latest .
     - uses: engineerd/setup-kind@v0.3.0
     - name: Setup istio
       uses: ./.github/actions/setup-istio
@@ -42,8 +35,6 @@ jobs:
     - id: startIstio
       name: Start istio-playground
       run: |
-        echo ${{ secrets.GITHUB_TOKEN }} | docker login docker.pkg.github.com -u ${{ github.actor }} --password-stdin
-        docker pull docker.pkg.github.com/explorviz/istio-playground/jvm:latest
         kind load docker-image docker.pkg.github.com/explorviz/istio-playground/jvm:latest
 
         kubectl create namespace quarkus
@@ -56,7 +47,6 @@ jobs:
         kubectl wait --for=condition=Ready pod --all -n quarkus --timeout=60s
 
         INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
-        SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].nodePort}')
         INGRESS_HOST=$(kubectl get po -l istio=ingressgateway -n istio-system -o jsonpath='{.items[0].status.hostIP}')
 
         echo "::set-env name=gateway_url::$INGRESS_HOST:$INGRESS_PORT"
