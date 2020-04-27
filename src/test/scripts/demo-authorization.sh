@@ -31,7 +31,7 @@ ALLOW_pattern() {
 checkAccessFromOtherNs() {
     printf "$1 to $2: $3 "
     pod=$(kubectl get pods -n foo -o jsonpath="{.items[*].metadata.name}" -l app=$1-app)
-    if kubectl exec -n foo -it "$pod" -c istio-playground -- curl http://$2-app-service.quarkus:8000/login.html | grep -q "$($3_pattern)"; then
+    if kubectl exec -n foo "$pod" -c istio-playground -- curl http://$2-app-service.quarkus:8000/login.html | grep -q "$($3_pattern)"; then
         printf "$CHECKMARK\n"
     else
         printf "$CROSS\n"
@@ -42,7 +42,7 @@ checkAccessFromOtherNs() {
 checkAccess() {
     printf "$1 to $2: $3 "
     pod=$(kubectl get pods -n quarkus -o jsonpath="{.items[*].metadata.name}" -l app=$1-app)
-    if kubectl exec -n quarkus -it "$pod" -c istio-playground -- curl http://$2-app-service.quarkus:8000/login.html | grep -q "$($3_pattern)"; then
+    if kubectl exec -n quarkus "$pod" -c istio-playground -- curl http://$2-app-service.quarkus:8000/login.html | grep -q "$($3_pattern)"; then
         printf "$CHECKMARK\n"
     else
         printf "$CROSS\n"
