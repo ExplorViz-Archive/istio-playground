@@ -57,6 +57,11 @@ jobs:
     - name: Test authentication of pages
       run: |
         kubectl create namespace foo
+
         kubectl apply -f src/test/resources/kube/quarkus/web-app/other-ns-app.yaml
         kubectl apply -f src/test/resources/kube/quarkus/web-app/rest-app.yaml
+
+        kubectl wait --for=condition=Ready pod --all -n quarkus --timeout=60s
+        kubectl wait --for=condition=Ready pod --all -n foo --timeout=60s
+
         src/test/scripts/demo-authorization.sh test_one_for_one
