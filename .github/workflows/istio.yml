@@ -56,6 +56,7 @@ jobs:
         curl -s http://${{env.gateway_url}}/asecret.html | grep "RBAC: access denied"
     - name: Test authentication of pages
       run: |
+        kubectl create namespace foo
         kubectl apply -f src/test/resources/kube/quarkus/web-app/other-ns-app.yaml
         kubectl apply -f src/test/resources/kube/quarkus/web-app/rest-app.yaml
         src/test/scripts/demo-authorization.sh test_one_for_one
