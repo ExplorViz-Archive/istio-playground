@@ -1,0 +1,14 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-get-on-web-app
+  namespace: quarkus
+spec:
+  selector:
+    matchLabels:
+      app: web-app
+  rules:
+  - to:
+    - operation:
+        methods: ["GET"]
+        

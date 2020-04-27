@@ -26,7 +26,7 @@ spec:
   rules:
   - from:
     - source:
-        notRequestPrincipals: ["*"]
+        notRequestPrincipals: ["https://dev-0kw21a7w.auth0.com//github|6057021"]
     to:
     - operation:
-        paths: ["/secret", "/asecret.html"]
+        paths: ["/secret", "/asecret.html", "/secretgroup"]
