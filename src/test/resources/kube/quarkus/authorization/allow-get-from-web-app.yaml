@@ -2,11 +2,10 @@ apiVersion: security.istio.io/v1beta1
 kind: AuthorizationPolicy
 metadata:
   name: allow-get-from-web-app
-  namespace: quarkus
 spec:
   selector:
     matchLabels:
-      app: rest-app
+      app: httpbin
   rules:
   - from:
     - source:

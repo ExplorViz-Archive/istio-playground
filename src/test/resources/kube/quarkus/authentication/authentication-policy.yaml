@@ -2,7 +2,7 @@ apiVersion: security.istio.io/v1beta1
 kind: RequestAuthentication
 metadata:
   name: quarkus
-  namespace: istio-system
+  namespace: quarkus
 spec:
   selector:
       matchLabels:
@@ -17,7 +17,7 @@ apiVersion: "security.istio.io/v1beta1"
 kind: "AuthorizationPolicy"
 metadata:
   name: "frontend-ingress"
-  namespace: istio-system
+  namespace: quarkus
 spec:
   selector:
     matchLabels:

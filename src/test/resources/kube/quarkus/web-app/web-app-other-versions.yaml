@@ -1,0 +1,47 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app-deployment-backup
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-app
+      version: v1
+  template:
+    metadata:
+      labels:
+        app: web-app
+        version: v1
+    spec:
+      serviceAccountName: web-app-service-account
+      containers:
+      - image: docker.pkg.github.com/explorviz/istio-playground/jvm:latest
+        imagePullPolicy: IfNotPresent
+        name: istio-playground
+        ports:
+        - containerPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: web-app-deployment-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: web-app
+      version: v2
+  template:
+    metadata:
+      labels:
+        app: web-app
+        version: v2
+    spec:
+      serviceAccountName: web-app-service-account
+      containers:
+      - image: docker.pkg.github.com/explorviz/istio-playground/jvm:latest
+        imagePullPolicy: IfNotPresent
+        name: istio-playground
+        ports:
+        - containerPort: 8080
