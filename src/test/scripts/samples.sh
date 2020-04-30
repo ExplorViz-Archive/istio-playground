@@ -44,7 +44,7 @@ setup() {
   policies
   kubectl wait --for=condition=Ready pod --all-namespaces --timeout=150s --all
   if [ ! -z "$sleep" ]; then
-    sleep_with_progressbar "Waiting for policies to be enabled " 75
+    sleep_with_progressbar "Waiting for policies to be enabled " 90
   fi
 }
 

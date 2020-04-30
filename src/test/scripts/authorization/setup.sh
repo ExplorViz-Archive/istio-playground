@@ -8,7 +8,6 @@ pods() {
   apply foo     quarkus/web-app/web-app.yaml
   apply foo     quarkus/web-app/httpbin.yaml
   apply quarkus quarkus/web-app/httpbin.yaml
-  apply quarkus quarkus/web-app/web-app-other-versions.yaml
 }
 
 policies() {
