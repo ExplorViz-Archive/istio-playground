@@ -40,7 +40,7 @@ minikubeStart {
 }
 
 task istioctlStart(type: Exec) {
-    commandLine 'istioctl', 'manifest', 'apply', '--set', 'profile=default'
+    commandLine 'istioctl', 'manifest', 'apply', '--set', 'profile=default', '--set', 'values.grafana.enabled=true'
 }
 
 task playgroundBuildImage(type: Exec) {
@@ -49,29 +49,22 @@ task playgroundBuildImage(type: Exec) {
     tasks.findByName('playgroundBuildImage').mustRunAfter 'quarkusBuild'
 }
 
-task playgroundDeploy(type: Exec) {
-    dependsOn 'playgroundBuildImage'
-    commandLine 'scripts/application-tasks-wrapper.sh', 'deploy'
-    tasks.findByName('playgroundDeploy').mustRunAfter 'playgroundBuildImage'
+task minikubeSetupIstioIngress(type: Exec) {
+    commandLine 'scripts/application-tasks-wrapper.sh', 'configure_minikube_ingress'
 }
 
-task playgroundSetupGateway(type: Exec) {
-    commandLine 'kubectl', 'apply', '-f', 'src/main/kube/gateway.yaml'
-}
-
-task playgroundSetupAuthenticationPolicy(type: Exec) {
-    commandLine 'kubectl', 'apply', '-f', 'src/main/kube/authentication-policy.yaml'
+task playgroundSample(type: Exec) {
+    String sample=project.properties['sample'] ?: "authentication"
+    String mode=project.properties['mode'] ?: "setup"
+    commandLine 'src/test/scripts/samples.sh', sample, mode
 }
 
 task playgroundInitialSetup {
     dependsOn 'minikubeStart'
     dependsOn 'istioctlStart'
+    dependsOn 'minikubeSetupIstioIngress'
     dependsOn 'playgroundBuildImage'
-    dependsOn 'playgroundDeploy'
-    dependsOn 'playgroundSetupGateway'
-    dependsOn 'playgroundSetupAuthenticationPolicy'
     tasks.findByName('istioctlStart').mustRunAfter 'minikubeStart'
-    tasks.findByName('playgroundDeploy').mustRunAfter 'istioctlStart'
-    tasks.findByName('playgroundSetupGateway').mustRunAfter 'playgroundDeploy'
-    tasks.findByName('playgroundSetupAuthenticationPolicy').mustRunAfter 'playgroundDeploy'
+    tasks.findByName('minikubeSetupIstioIngress').mustRunAfter 'istioctlStart'
+    tasks.findByName('playgroundBuildImage').mustRunAfter 'istioctlStart'
 }

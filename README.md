@@ -35,6 +35,12 @@ Since the external url supplied by minikube is not fixed, the login probably won
 To allow the callback URL it has to be configured here:
 https://manage.auth0.com/#/applications/obzrLluUpRf2C1XsaEbGsPK1IXTf2Xwl/settings
 
+To make the application accessible under `istio-playground.com` execute this script:
+```
+ingress_host=$(kubectl get ingress -n istio-system | awk 'FNR > 1 {print $4}')
+if ! grep "$ingress_host" /etc/hosts; then echo -e "$ingress_host  istio-playground.com" | sudo tee -a /etc/hosts; fi
+```
+
 
 ## Update the application in a local minikube cluster
 

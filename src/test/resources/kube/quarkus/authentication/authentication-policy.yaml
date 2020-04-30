@@ -1,8 +1,8 @@
 apiVersion: security.istio.io/v1beta1
 kind: RequestAuthentication
 metadata:
-  name: quarkus
-  namespace: quarkus
+  name: auth0-authentication
+  namespace: istio-system
 spec:
   selector:
       matchLabels:
@@ -17,16 +17,13 @@ apiVersion: "security.istio.io/v1beta1"
 kind: "AuthorizationPolicy"
 metadata:
   name: "frontend-ingress"
-  namespace: quarkus
+  namespace: istio-system
 spec:
   selector:
     matchLabels:
       istio: ingressgateway
   action: DENY
   rules:
-  - from:
-    - source:
-        notRequestPrincipals: ["https://dev-0kw21a7w.auth0.com//github|6057021"]
-    to:
+  - to:
     - operation:
         paths: ["/secret", "/asecret.html", "/secretgroup"]
