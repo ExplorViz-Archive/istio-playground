@@ -38,16 +38,11 @@ default_setup() {
   apply quarkus quarkus/traffic-management/gateway.yaml         #setup a gateway
 }
 
-export_gateway_env_variable() {
-  
-}
-
 setup() {
   MODE=apply
   pods
   policies
   kubectl wait --for=condition=Ready pod --all-namespaces --timeout=60s --all
-  export_gateway_env_variable
   if [ ! -z "$sleep" ]; then
     sleep_with_progressbar "Waiting for policies to be enabled " 45
   fi
@@ -55,7 +50,6 @@ setup() {
 
 verify() {
   echo "Verifying access..."
-  export_gateway_env_variable
   do_verify
   echo "Verifyied access."
 }
