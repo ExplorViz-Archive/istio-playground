@@ -42,7 +42,7 @@ setup() {
   MODE=apply
   pods
   policies
-  kubectl wait --for=condition=Ready pod --all-namespaces --timeout=60s --all
+  kubectl wait --for=condition=Ready pod --all-namespaces --timeout=90s --all
   if [ ! -z "$sleep" ]; then
     sleep_with_progressbar "Waiting for policies to be enabled " 45
   fi
