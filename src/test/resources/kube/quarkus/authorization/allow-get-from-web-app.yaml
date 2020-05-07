@@ -1,0 +1,16 @@
+apiVersion: security.istio.io/v1beta1
+kind: AuthorizationPolicy
+metadata:
+  name: allow-get-from-web-app
+spec:
+  selector:
+    matchLabels:
+      app: httpbin
+  rules:
+  - from:
+    - source:
+        principals: ["cluster.local/ns/quarkus/sa/web-app-service-account"]
+    to:
+    - operation:
+        methods: ["GET"]
+        

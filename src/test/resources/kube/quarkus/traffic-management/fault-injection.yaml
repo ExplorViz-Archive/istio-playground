@@ -1,0 +1,32 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: quarkus
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - web-app-gateway
+  http:
+  - fault:
+      abort:
+        percentage:
+          value: 50
+        httpStatus: 400
+      delay:
+        fixedDelay: 2s
+        percentage:
+          value: 50
+    match:
+    - uri:
+        prefix: "/asecret.html"
+    route:
+    - destination:
+        port:
+          number: 8000
+        host: web-app-service.quarkus.svc.cluster.local
+  - route:
+    - destination:
+        port:
+          number: 8000
+        host: web-app-service.quarkus.svc.cluster.local

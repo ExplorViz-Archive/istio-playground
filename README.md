@@ -13,7 +13,7 @@ You can run your application in dev mode that enables live coding using:
 ./gradlew quarkusDev
 ```
 
-## Running the application in a local minikube cluster
+## Setup Istio in a local minikube cluster
 
 Requirements:
 * [minikube](https://kubernetes.io/docs/setup/learning-environment/minikube/) installed
@@ -28,22 +28,46 @@ This will:
 * start minikube with the required settings for istio.
   * If you already have minikube cluster started, you should delete it (or specify a profile).
 * start istio with the default profile
-* deploy istio-playground and configure istio to showcase its authentication and authorization capabilities
-* print the url of the application
+* start configuring minikube ingress
+* build an image of the istio-playground application
 
-Since the external url supplied by minikube is not fixed, the login probably wont work. You will see an `Callback URL mismatch.` error.
-To allow the callback URL it has to be configured here:
-https://manage.auth0.com/#/applications/obzrLluUpRf2C1XsaEbGsPK1IXTf2Xwl/settings
+To make the application accessible under `istio-playground.com` execute this script:
+```
+ingress_host=$(kubectl get ingress -n istio-system | awk 'FNR > 1 {print $4}')
+if ! grep "$ingress_host" /etc/hosts; then echo -e "$ingress_host  istio-playground.com" | sudo tee -a /etc/hosts; fi
+```
 
+## Deploy a sample configuration
+There are several istio-playground sample configurations.
+
+### Authentication demo
+To deploy the sample:
+```
+src/test/scripts/samples.sh authentication setup
+```
+
+To delete the sample:
+```
+src/test/scripts/samples.sh authentication cleanup
+```
+
+### Authorization demo
+To deploy the sample:
+```
+src/test/scripts/samples.sh authorization setup
+```
+
+To delete the sample:
+```
+src/test/scripts/samples.sh authorization cleanup
+```
 
 ## Update the application in a local minikube cluster
-
-If you want to update the application you can do so with
+If you want to update the istio-playground image:
 ```
 ./gradlew playgroundDeploy
-```
-
-If you want to update the authentication policy found in src/main/kube/authentication-policy.yaml`
-```
-./gradlew playgroundSetupAuthenticationPolicy
+#mode=authorization
+mode=authentication
+src/test/scripts/samples.sh $mode cleanup
+src/test/scripts/samples.sh $mode setup
 ```
