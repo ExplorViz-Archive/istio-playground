@@ -1,12 +1,12 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: DestinationRule
 metadata:
-  name: my-destination-rule
+  name: circuit-breaker
 spec:
   host: web-app-service.quarkus.svc.cluster.local
   trafficPolicy:
-    # loadBalancer:
-    #   simple: ROUND_ROBIN
+    loadBalancer:
+      simple: ROUND_ROBIN
     connectionPool:
       tcp:
         maxConnections: 1
@@ -18,7 +18,7 @@ spec:
       interval: 1s
       baseEjectionTime: 3m
       maxEjectionPercent: 100
-  # subsets:
-  # - name: v1
-  #   labels:
-  #     version: v1
+  subsets:
+  - name: v1
+    labels:
+      version: v1

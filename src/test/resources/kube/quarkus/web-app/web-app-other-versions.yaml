@@ -13,6 +13,7 @@ spec:
       labels:
         app: web-app
         version: v1
+        response: slow
     spec:
       serviceAccountName: web-app-service-account
       containers:
