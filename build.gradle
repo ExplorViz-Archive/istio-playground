@@ -40,7 +40,7 @@ minikubeStart {
 }
 
 task istioctlStart(type: Exec) {
-    commandLine 'istioctl', 'manifest', 'apply', '--set', 'profile=default', '--set', 'values.grafana.enabled=true'
+    commandLine 'istioctl', 'manifest', 'apply', '--set', 'profile=default', '--set', 'values.grafana.enabled=true', '--set', 'values.kiali.enabled=true'
 }
 
 task playgroundBuildImage(type: Exec) {
