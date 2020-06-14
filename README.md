@@ -71,3 +71,29 @@ mode=authentication
 src/test/scripts/samples.sh $mode cleanup
 src/test/scripts/samples.sh $mode setup
 ```
+
+# Explorviz in Kubernetes
+
+The directory `explorviz-istio` contains everything needed to deploy explorviz in a minikube kubernetes.
+
+To deploy it, follow these steps. [Helm](https://helm.sh/docs/intro/install/) has to be installed:
+```
+cd explorviz-istio
+# setup minikube
+./istiow minikube
+# setup istio
+./istiow istio
+# deploy zookeeper, kafka and explorviz
+./istiow deploy
+# make it accessible under add-istio-playground-to-etc-hosts
+./istiow add-istio-playground-to-etc-hosts
+
+# A demo application can be found here
+# https://github.com/ExplorViz/docs/wiki/Monitoring-Configuration
+echo "Adjust the following properties:"
+echo "kieker.monitoring.writer.tcp.SingleSocketTcpWriter.hostname=$(minikube ip)"
+echo "kieker.monitoring.writer.tcp.SingleSocketTcpWriter.port=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="tcp")].nodePort}')"
+
+# The kiali dashboard visualizes the delpoyed application:
+istioctl dashboard kiali
+```

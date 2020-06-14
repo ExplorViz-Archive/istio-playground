@@ -1,0 +1,2 @@
+{{ template "explorviz.service" (dict "Values" .Values "component" .Values.historyService)  }}
+{{ template "explorviz.deployment" (dict "Values" .Values "component" .Values.historyService)  }}

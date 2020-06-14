@@ -1,0 +1,60 @@
+# Default values for explorviz.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+namespace: explorviz
+
+kafkaUrl: kafka-0.kafka.kafka-ca1.svc.cluster.local:9092
+
+broadcastService:
+  name: broadcast-service
+  image: explorviz/explorviz-backend-broadcast-service:1.5.0
+  port: 8081
+  kafka:
+    topic: landscape-update
+
+userService:
+  name: user-service
+  image: explorviz/explorviz-backend-user-service:1.5.0
+  port: 8082
+  mongoPort: 27017
+  kafka:
+    topic:
+
+discoveryService:
+  name: discovery-service
+  image: explorviz/explorviz-backend-discovery-service:1.5.0
+  port: 8083
+
+historyService:
+  name: history-service
+  image: explorviz/explorviz-backend-history-service:1.5.0
+  port: 8086
+  kafka:
+    topic: landscape-update
+  mongoPort: 27018
+
+settingsService:
+  name: settings-service
+  image: explorviz/explorviz-backend-settings-service:1.5.0
+  port: 8087
+  mongoPort: 27019
+  kafka:
+    topic:
+
+landscapeService:
+  name: landscape-service
+  image: explorviz/explorviz-backend-landscape-service:1.5.0
+  port: 10135
+  kafka:
+    topic: landscape-update
+
+frontend:
+  name: frontend
+  image: explorviz/explorviz-frontend:1.5.0
+  port: 80
+  env:
+  - name: API_ROOT
+    value: "http://istio-playground.com"
+  - name: FRONTEND_IP
+    value: "http://istio-playground.com"

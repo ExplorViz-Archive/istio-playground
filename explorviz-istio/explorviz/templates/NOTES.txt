@@ -1,0 +1,2 @@
+1. Access the url at:
+http://istio-playground.com

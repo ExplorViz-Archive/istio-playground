@@ -1,0 +1,57 @@
+#/bin/bash
+
+minikube() {
+    minkube start --vm-driver=kvm2 --memory=16384 --cpus=4 --kubernetes-version=v1.18.0
+}
+
+istio() {
+    KIALI_USERNAME=$(read -p 'Kiali Username: ' uval && echo -n $uval | base64)
+    KIALI_PASSPHRASE=$(read -sp 'Kiali Passphrase: ' pval && echo -n $pval | base64)
+    NAMESPACE=istio-system
+    kubectl create namespace $NAMESPACE
+    cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Secret
+metadata:
+  name: kiali
+  namespace: $NAMESPACE
+  labels:
+    app: kiali
+type: Opaque
+data:
+  username: $KIALI_USERNAME
+  passphrase: $KIALI_PASSPHRASE
+EOF
+
+    istioctl manifest apply --set profile=default --set values.grafana.enabled=true --set values.kiali.enabled=true
+}
+
+kiali() {
+    istioctl dashboard kiali &
+}
+
+add-istio-playground-to-etc-hosts() {
+    ingress_host=$(kubectl get ingress -n istio-system | awk 'FNR > 1 {print $4}')
+    if ! grep "$ingress_host" /etc/hosts; then echo -e "$ingress_host  istio-playground.com" | sudo tee -a /etc/hosts; fi
+}
+
+delete() {
+    kubectl delete namespace kafka-ca1
+}
+
+deploy() {
+    SCRIPT_PATH=$(dirname $(realpath -s $0))
+    for d in $SCRIPT_PATH/0* ; do
+        echo "Applying $d"
+        kubectl apply -f $d
+        read -n 1 -s -r -p "Press any key to continue"
+    done
+
+    helm install explorviz --generate-name
+}
+
+template() {
+    helm template explorviz --debug --output-dir tmp
+}
+
+$1

@@ -1,0 +1,74 @@
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  namespace: {{ .Values.namespace }}
+  name: gateway-virtual-service
+spec:
+  hosts:
+  - "*"
+  gateways:
+  - explorviz-gateway
+  tcp:
+  - match:
+    - port: 31400
+    route:
+    - destination:
+        host: {{ template "explorviz.host" (dict "Values" .Values "component" .Values.landscapeService) }}
+        port:
+          number: 9000
+  http:
+  - match:
+    - uri:
+        prefix: "/v1/tokens"
+    - uri:
+        prefix: "/v1/users"
+    - uri:
+        prefix: "/v1/roles"
+    - uri:
+        prefix: "/v1/userbatch"
+    route:
+    - destination:
+        port:
+          number: 8000
+        host: {{ template "explorviz.host" (dict "Values" .Values "component" .Values.userService) }}
+  - match:
+    - uri:
+        prefix: "/v1/settings"
+    - uri:
+        prefix: "/v1/preferences"
+    route:
+    - destination:
+        port:
+          number: 8000
+        host: {{ template "explorviz.host" (dict "Values" .Values "component" .Values.settingsService) }}
+  - match:
+    - uri:
+        prefix: "/v1/landscapes/broadcast"
+    route:
+    - destination:
+        port:
+          number: 8000
+        host: {{ template "explorviz.host" (dict "Values" .Values "component" .Values.broadcastService) }}
+  - match:
+    - uri:
+        prefix: "/v1/landscapes"
+    - uri:
+        prefix: "/v1/timestamps"    
+    route:
+    - destination:
+        port:
+          number: 8000
+        host: {{ template "explorviz.host" (dict "Values" .Values "component" .Values.historyService) }}
+  - match:
+    - uri:
+        prefix: "/v1/agents"
+    route:
+    - destination:
+        port:
+          number: 8000
+        host: {{ template "explorviz.host" (dict "Values" .Values "component" .Values.discoveryService) }}
+  - route:
+    - destination:
+        port:
+          number: 8000
+        host: {{ template "explorviz.host" (dict "Values" .Values "component" .Values.frontend) }}
