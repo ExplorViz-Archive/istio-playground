@@ -15,6 +15,8 @@ spec:
       labels:
         app: {{ .component.name }}
         version: v1
+      annotations:
+        sidecar.istio.io/rewriteAppHTTPProbers: "true"
     spec:
       containers:
 {{- if .component.mongoPort }}

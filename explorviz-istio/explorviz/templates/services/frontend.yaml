@@ -1,2 +1,9 @@
 {{ template "explorviz.service" (dict "Values" .Values "component" .Values.frontend)  }}
 {{ template "explorviz.deployment" (dict "Values" .Values "Release" .Release "component" .Values.frontend)  }}
+        livenessProbe:
+          httpGet:
+            path: /login
+            port: 80
+          initialDelaySeconds: 20
+          periodSeconds: 5
+          failureThreshold: 2
