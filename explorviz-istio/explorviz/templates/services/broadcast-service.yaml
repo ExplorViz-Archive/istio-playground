@@ -1,2 +1,2 @@
 {{ template "explorviz.service" (dict "Values" .Values "component" .Values.broadcastService)  }}
-{{ template "explorviz.deployment" (dict "Values" .Values "component" .Values.broadcastService)  }}
+{{ template "explorviz.deployment" (dict "Values" .Values "Release" .Release "component" .Values.broadcastService)  }}

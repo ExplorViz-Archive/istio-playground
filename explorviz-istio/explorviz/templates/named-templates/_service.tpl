@@ -4,7 +4,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ .component.name }}
-  namespace: {{ .Values.namespace }}
   labels:
     app: {{ .component.name }}
 spec:

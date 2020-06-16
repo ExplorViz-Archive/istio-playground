@@ -2,10 +2,6 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
-namespace: explorviz
-
-kafkaUrl: explorviz-kafka-0.explorviz-kafka-headless.kafka-ca1.svc.cluster.local:9092
-
 broadcastService:
   name: broadcast-service
   image: explorviz/explorviz-backend-broadcast-service:1.5.0
@@ -58,3 +54,9 @@ frontend:
     value: "http://istio-playground.com"
   - name: FRONTEND_IP
     value: "http://istio-playground.com"
+
+kafka:
+  enabled: true
+  replicas: 1
+  zookeeper:
+    replicaCount: 1

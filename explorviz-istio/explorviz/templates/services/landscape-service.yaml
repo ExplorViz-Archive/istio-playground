@@ -2,7 +2,6 @@ apiVersion: v1
 kind: Service
 metadata:
   name: {{ .Values.landscapeService.name }}
-  namespace: {{ .Values.namespace }}
   labels:
     app: {{ .Values.landscapeService.name }}
 spec:
@@ -14,7 +13,7 @@ spec:
     app: {{ .Values.landscapeService.name }}
     version: v1
 ---
-{{ template "explorviz.deployment" (dict "Values" .Values "component" .Values.landscapeService)  }}
+{{ template "explorviz.deployment" (dict "Values" .Values "Release" .Release "component" .Values.landscapeService)  }}
       - image: explorviz/explorviz-backend-analysis-service:1.5.0
         imagePullPolicy: IfNotPresent
         name: analysis-service-container

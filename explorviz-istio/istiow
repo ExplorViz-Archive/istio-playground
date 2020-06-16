@@ -47,13 +47,12 @@ deploy() {
         read -n 1 -s -r -p "Press any key to continue"
     done
 
-    helm install explorviz-kafka --namespace kafka-ca1 -f kafka-values.yaml incubator/kafka
-
-    helm install explorviz-istio explorviz
+    helm dependency update explorviz
+    helm install explorviz-istio --namespace explorviz explorviz
 }
 
 template() {
-    helm template explorviz --debug --output-dir tmp
+    helm template explorviz --debug --output-dir ../tmp
 }
 
 $1

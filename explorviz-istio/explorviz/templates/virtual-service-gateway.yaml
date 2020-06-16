@@ -1,7 +1,6 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: VirtualService
 metadata:
-  namespace: {{ .Values.namespace }}
   name: gateway-virtual-service
 spec:
   hosts:
@@ -13,7 +12,7 @@ spec:
     - port: 31400
     route:
     - destination:
-        host: {{ template "explorviz.host" (dict "Values" .Values "component" .Values.landscapeService) }}
+        host: {{ template "explorviz.host" (dict "Release" .Release "component" .Values.landscapeService) }}
         port:
           number: 9000
   http:
@@ -30,7 +29,7 @@ spec:
     - destination:
         port:
           number: 8000
-        host: {{ template "explorviz.host" (dict "Values" .Values "component" .Values.userService) }}
+        host: {{ template "explorviz.host" (dict "Release" .Release "component" .Values.userService) }}
   - match:
     - uri:
         prefix: "/v1/settings"
@@ -40,7 +39,7 @@ spec:
     - destination:
         port:
           number: 8000
-        host: {{ template "explorviz.host" (dict "Values" .Values "component" .Values.settingsService) }}
+        host: {{ template "explorviz.host" (dict "Release" .Release "component" .Values.settingsService) }}
   - match:
     - uri:
         prefix: "/v1/landscapes/broadcast"
@@ -48,7 +47,7 @@ spec:
     - destination:
         port:
           number: 8000
-        host: {{ template "explorviz.host" (dict "Values" .Values "component" .Values.broadcastService) }}
+        host: {{ template "explorviz.host" (dict "Release" .Release "component" .Values.broadcastService) }}
   - match:
     - uri:
         prefix: "/v1/landscapes"
@@ -58,7 +57,7 @@ spec:
     - destination:
         port:
           number: 8000
-        host: {{ template "explorviz.host" (dict "Values" .Values "component" .Values.historyService) }}
+        host: {{ template "explorviz.host" (dict "Release" .Release "component" .Values.historyService) }}
   - match:
     - uri:
         prefix: "/v1/agents"
@@ -66,9 +65,9 @@ spec:
     - destination:
         port:
           number: 8000
-        host: {{ template "explorviz.host" (dict "Values" .Values "component" .Values.discoveryService) }}
+        host: {{ template "explorviz.host" (dict "Release" .Release "component" .Values.discoveryService) }}
   - route:
     - destination:
         port:
           number: 8000
-        host: {{ template "explorviz.host" (dict "Values" .Values "component" .Values.frontend) }}
+        host: {{ template "explorviz.host" (dict "Release" .Release "component" .Values.frontend) }}
