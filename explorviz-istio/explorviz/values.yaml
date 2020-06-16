@@ -4,7 +4,7 @@
 
 namespace: explorviz
 
-kafkaUrl: kafka-0.kafka.kafka-ca1.svc.cluster.local:9092
+kafkaUrl: explorviz-kafka-0.explorviz-kafka-headless.kafka-ca1.svc.cluster.local:9092
 
 broadcastService:
   name: broadcast-service
