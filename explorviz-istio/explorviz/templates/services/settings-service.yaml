@@ -1,2 +1,14 @@
 {{ template "explorviz.service" (dict "Values" .Values "component" .Values.settingsService)  }}
 {{ template "explorviz.deployment" (dict "Values" .Values "Release" .Release "component" .Values.settingsService)  }}
+        livenessProbe:
+          httpGet:
+            path: /v1/health
+            port: {{ .Values.settingsService.port }}
+          initialDelaySeconds: 40
+          periodSeconds: 5
+        readinessProbe:
+          httpGet:
+            path: /v1/health
+            port: {{ .Values.settingsService.port }}
+          initialDelaySeconds: 10
+          periodSeconds: 5
