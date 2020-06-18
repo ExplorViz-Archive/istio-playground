@@ -49,11 +49,6 @@ frontend:
   name: frontend
   image: explorviz/explorviz-frontend:1.5.0
   port: 80
-  env:
-  - name: API_ROOT
-    value: "http://istio-playground.com"
-  - name: FRONTEND_IP
-    value: "http://istio-playground.com"
 
 kafka:
   enabled: true

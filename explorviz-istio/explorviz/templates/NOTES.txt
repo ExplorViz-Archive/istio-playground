@@ -1,2 +1,7 @@
 1. Access the url at:
-http://istio-playground.com
+http://{{ include "explorviz.hostUrl" . }}
+
+
+Make sure the url is mapped in /etc/hosts:
+ingress_host=$(kubectl get ingress -n istio-system | awk 'FNR > 1 {print $4}')
+if ! grep "$ingress_host" /etc/hosts; then echo -e "$ingress_host  {{ include "explorviz.hostUrl" . }}" | sudo tee -a /etc/hosts; fi

@@ -1,7 +1,7 @@
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
-  name: explorviz-gateway
+  name: {{ .Release.Name }}-gateway
 spec:
   selector:
     istio: ingressgateway # use Istio default gateway implementation
@@ -11,10 +11,10 @@ spec:
       name: tcp
       protocol: TCP
     hosts:
-    - "*"
+    - {{ include "explorviz.hostUrl" . | quote }}
   - port:
       number: 80
       name: http
       protocol: HTTP
     hosts:
-    - "*"
+    - {{ include "explorviz.hostUrl" . | quote }}

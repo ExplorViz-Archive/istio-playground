@@ -1,5 +1,9 @@
 {{ template "explorviz.service" (dict "Values" .Values "component" .Values.frontend)  }}
 {{ template "explorviz.deployment" (dict "Values" .Values "Release" .Release "component" .Values.frontend)  }}
+        - name: API_ROOT
+          value: "http://{{ include "explorviz.hostUrl" . }}"
+        - name: FRONTEND_IP
+          value: "http://{{ include "explorviz.hostUrl" . }}"
         livenessProbe:
           httpGet:
             path: /login
@@ -7,3 +11,4 @@
           initialDelaySeconds: 20
           periodSeconds: 5
           failureThreshold: 2
+        
