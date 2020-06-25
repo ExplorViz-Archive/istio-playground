@@ -50,8 +50,13 @@ frontend:
   image: explorviz/explorviz-frontend:1.5.0
   port: 80
 
-kafka:
+cp-helm-charts:
   enabled: true
-  replicas: 1
-  zookeeper:
-    replicaCount: 1
+  cp-zookeeper:
+    servers: 1
+  cp-kafka:
+    brokers: 1
+  cp-schema-registry:
+    enabled: false
+  cp-kafka-connect:
+    enabled: false

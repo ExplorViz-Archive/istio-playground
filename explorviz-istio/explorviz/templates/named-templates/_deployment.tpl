@@ -41,7 +41,7 @@ spec:
 {{- end }}
 {{- if .component.kafka }}
         - name: EXCHANGE_KAFKA_BOOTSTRAP_SERVERS
-          value: {{ .Release.Name }}-kafka-0.{{ .Release.Name }}-kafka-headless.{{ .Release.Namespace }}.svc.cluster.local:9092
+          value: {{ .Release.Name }}-cp-kafka-0.{{ .Release.Name }}-cp-kafka-headless.{{ .Release.Namespace }}.svc.cluster.local:9092
 {{- if .component.kafka.topic }}
         - name: EXCHANGE_KAFKA_TOPIC_NAME
           value: "landscape-update"
