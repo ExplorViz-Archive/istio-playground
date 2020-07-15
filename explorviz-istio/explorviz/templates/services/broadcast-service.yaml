@@ -4,11 +4,11 @@
           httpGet:
             path: /v1/health
             port: {{ .Values.broadcastService.port }}
-          initialDelaySeconds: 40
+          initialDelaySeconds: 20
           periodSeconds: 5
         readinessProbe:
           httpGet:
             path: /v1/health
             port: {{ .Values.broadcastService.port }}
-          initialDelaySeconds: 10
+          initialDelaySeconds: 5
           periodSeconds: 5

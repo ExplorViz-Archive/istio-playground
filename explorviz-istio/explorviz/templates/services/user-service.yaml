@@ -4,7 +4,7 @@
           httpGet:
             path: /v1/health
             port: {{ .Values.userService.port }}
-          initialDelaySeconds: 40
+          initialDelaySeconds: 20
           periodSeconds: 5
         readinessProbe:
           httpGet:

@@ -6,7 +6,7 @@ spec:
   hosts:
   - {{ include "explorviz.hostUrl" . | quote }}
   gateways:
-  - {{ .Release.Namespace }}/{{ .Release.Name }}-gateway
+  - {{ .Release.Namespace }}/{{ .Release.Name }}-gateway-{{ .Release.Namespace }}
   tcp:
   - match:
     - port: 31400
