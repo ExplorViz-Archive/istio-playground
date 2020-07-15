@@ -1,7 +1,8 @@
-1. Access the url at:
-http://{{ include "explorviz.hostUrl" . }}
+
+1. Make sure the url is mapped in /etc/hosts:
+ingress_host=$(kubectl get po -l istio=ingressgateway -n istio-system -o jsonpath='{.items[0].status.hostIP}')
+if ! grep "{{ include "explorviz.hostUrl" . }}" /etc/hosts; then echo -e "$ingress_host  {{ include "explorviz.hostUrl" . }}" | sudo tee -a /etc/hosts; fi
 
 
-Make sure the url is mapped in /etc/hosts:
-ingress_host=$(kubectl get ingress -n istio-system | awk 'FNR > 1 {print $4}')
-if ! grep "$ingress_host" /etc/hosts; then echo -e "$ingress_host  {{ include "explorviz.hostUrl" . }}" | sudo tee -a /etc/hosts; fi
+2. Access the frontend url:
+http://{{ include "explorviz.hostUrl" . }}:{{ .Values.port }}

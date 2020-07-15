@@ -1,20 +1,50 @@
 #/bin/bash
 
-minikube() {
-    minkube start --vm-driver=kvm2 --memory=16384 --cpus=4 --kubernetes-version=v1.18.0
+usage() { 
+    echo "Usage: $0 [OPTIONS] COMMAND"
+    echo "This script wraps the functions necessary to deploy explorviz in a kind kubernetes cluster." 
+    echo
+    echo "Examples:"
+    echo "  $0 install           Install explorviz via helm inside the namespace 'explorviz'"
+    echo "  $0 -n foo install    Install explorviz via helm inside the namespace 'foo'"
+    echo
+    echo "OPTIONS:"
+    echo "  -n            Specify the namespace used for explorviz. Default: 'explorviz'"
+    echo
+    echo "COMMAND:"
+    echo "  setup-kind    Create a KinD cluster named 'istio-testing'"
+    echo "  setup-istio   Install istio using a configuration made for explorviz"
+    echo "  install       Install explorviz via helm"
+    echo "  upgrade       Upgrade a previously installed helm release"
+    echo "  template      Render explorviz chart templates into ../tmp "
+    echo "  kiali         Start the istio kiali dashboard"
+    exit 1
 }
 
-istio() {
+NAMESPACE=explorviz
+while getopts ":n:" o; do
+    case "${o}" in
+        n)
+            NAMESPACE=${OPTARG}
+            ;;
+        *)
+            usage
+            ;;
+    esac
+done
+shift $((OPTIND-1))
+
+kiali-secret() {
     KIALI_USERNAME=$(read -p 'Kiali Username: ' uval && echo -n $uval | base64)
     KIALI_PASSPHRASE=$(read -sp 'Kiali Passphrase: ' pval && echo -n $pval | base64)
-    NAMESPACE=istio-system
-    kubectl create namespace $NAMESPACE
+    ISTIO_NAMESPACE=istio-system
+    kubectl create namespace $ISTIO_NAMESPACE
     cat <<EOF | kubectl apply -f -
 apiVersion: v1
 kind: Secret
 metadata:
   name: kiali
-  namespace: $NAMESPACE
+  namespace: $ISTIO_NAMESPACE
   labels:
     app: kiali
 type: Opaque
@@ -22,37 +52,71 @@ data:
   username: $KIALI_USERNAME
   passphrase: $KIALI_PASSPHRASE
 EOF
+}
 
-    istioctl manifest apply --set profile=default --set values.grafana.enabled=true --set values.kiali.enabled=true
+setup-istio() {
+    kiali-secret
+    istioctl manifest apply --set profile=default -f explorviz-istio.yaml
+}
+
+setup-minikube() {
+    minikube start --vm-driver=kvm2 --memory=16384 --cpus=4 --kubernetes-version=v1.18.0
+}
+
+setup-kind() {
+    kind create cluster --name istio-testing
+    kubectl config use-context kind-istio-testing
 }
 
 kiali() {
     istioctl dashboard kiali &
 }
 
-add-istio-playground-to-etc-hosts() {
-    ingress_host=$(kubectl get ingress -n istio-system | awk 'FNR > 1 {print $4}')
-    if ! grep "$ingress_host" /etc/hosts; then echo -e "$ingress_host  istio-playground.com" | sudo tee -a /etc/hosts; fi
+# Create the namespace and install explorviz via helm afterwards.
+install() {
+    echo "Creating namespace..."
+    cat <<EOF | kubectl apply -f -
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: $NAMESPACE
+  labels:
+    istio-injection: enabled
+EOF
+    echo "Namespace created."
+    sleep 1
+
+    helm dependency update explorviz
+
+    export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
+
+    helm install explorviz-istio --namespace $NAMESPACE --set port=$INGRESS_PORT explorviz
+
+    export MONITORING_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="tcp-monitoring")].nodePort}')
+    echo "Set port in kieker.monitoring*.properties to: Set kieker.monitoring.writer.tcp.SingleSocketTcpWriter.port=$MONITORING_PORT"
+}
+
+upgrade() {
+    export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
+
+    helm upgrade explorviz-istio --namespace $NAMESPACE --set port=$INGRESS_PORT explorviz
 }
 
 delete() {
-    kubectl delete namespace kafka-ca1
-}
-
-deploy() {
-    SCRIPT_PATH=$(dirname $(realpath -s $0))
-    for d in $SCRIPT_PATH/0* ; do
-        echo "Applying $d"
-        kubectl apply -f $d
-        read -n 1 -s -r -p "Press any key to continue"
-    done
-
-    helm dependency update explorviz
-    helm install explorviz-istio --namespace explorviz explorviz
+    helm delete --namespace $NAMESPACE explorviz-istio
 }
 
 template() {
-    helm template explorviz --debug --output-dir ../tmp
+    helm template explorviz --output-dir ../tmp
 }
 
-$1
+if type -t $1; then
+    $1
+else
+    echo "$1 is not a function"
+    echo
+    usage
+fi
+
+
+
