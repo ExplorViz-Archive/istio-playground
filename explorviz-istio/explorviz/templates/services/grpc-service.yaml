@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.grpcService.name }}
+spec:
+  selector:
+    app: {{ .Values.grpcService.name }}
+  type: ClusterIP
+  ports:
+  - name: grpc # important!
+    protocol: TCP
+    port: 50051
+    targetPort: 50051
+  selector:
+    app: {{ .Values.grpcService.name }}
+    version: v1
+---
+{{ template "explorviz.deployment" (dict "Values" .Values "Release" .Release "component" .Values.grpcService)  }}

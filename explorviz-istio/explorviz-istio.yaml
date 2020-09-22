@@ -39,6 +39,9 @@ spec:
             - port: 8060
               targetPort: 31400
               name: tcp-monitoring
+            - port: 50051
+              targetPort: 50051
+              name: grpc
         hpaSpec:
           maxReplicas: 5
           minReplicas: 1

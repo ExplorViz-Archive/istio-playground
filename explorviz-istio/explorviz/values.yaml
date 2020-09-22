@@ -6,14 +6,14 @@ port: 80
 
 broadcastService:
   name: broadcast-service
-  image: explorviz/explorviz-backend-broadcast-service:1.5.0
+  image: explorviz/explorviz-backend-broadcast-service:explorviz-1.5-istio
   port: 8081
   kafka:
     topic: landscape-update
 
 userService:
   name: user-service
-  image: explorviz/explorviz-backend-user-service:1.5.0
+  image: explorviz/explorviz-backend-user-service:explorviz-1.5-istio
   port: 8082
   mongoPort: 27017
   kafka:
@@ -21,12 +21,12 @@ userService:
 
 discoveryService:
   name: discovery-service
-  image: explorviz/explorviz-backend-discovery-service:1.5.0
+  image: explorviz/explorviz-backend-discovery-service:explorviz-1.5-istio
   port: 8083
 
 historyService:
   name: history-service
-  image: explorviz/explorviz-backend-history-service:1.5.0
+  image: explorviz/explorviz-backend-history-service:explorviz-1.5-istio
   port: 8086
   kafka:
     topic: landscape-update
@@ -34,7 +34,7 @@ historyService:
 
 settingsService:
   name: settings-service
-  image: explorviz/explorviz-backend-settings-service:1.5.0
+  image: explorviz/explorviz-backend-settings-service:explorviz-1.5-istio
   port: 8087
   mongoPort: 27019
   kafka:
@@ -42,10 +42,17 @@ settingsService:
 
 landscapeService:
   name: landscape-service
-  image: explorviz/explorviz-backend-landscape-service:1.5.0
+  image: explorviz/explorviz-backend-landscape-service:explorviz-1.5-istio
   port: 10135
   kafka:
     topic: landscape-update
+
+grpcService:
+  name: grpc-service
+  image: hostname:latest
+  port: 50051
+  kafka:
+    topic: 
 
 frontend:
   name: frontend

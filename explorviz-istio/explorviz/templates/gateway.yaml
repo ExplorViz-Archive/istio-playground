@@ -13,6 +13,12 @@ spec:
     hosts:
     - {{ include "explorviz.hostUrl" . | quote }}
   - port:
+      number: 50051
+      name: grpc{{ .Release.Namespace }}
+      protocol: GRPC
+    hosts:
+    - {{ include "explorviz.hostUrl" . | quote }}
+  - port:
       number: 80
       name: http{{ .Release.Namespace }}
       protocol: HTTP

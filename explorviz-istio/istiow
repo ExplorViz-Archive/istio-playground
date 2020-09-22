@@ -56,7 +56,7 @@ EOF
 
 setup-istio() {
     kiali-secret
-    istioctl manifest apply --set profile=default -f explorviz-istio.yaml
+    istioctl install -f explorviz-istio.yaml
 }
 
 setup-minikube() {
@@ -94,6 +94,9 @@ EOF
 
     export MONITORING_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="tcp-monitoring")].nodePort}')
     echo "Set port in kieker.monitoring*.properties to: Set kieker.monitoring.writer.tcp.SingleSocketTcpWriter.port=$MONITORING_PORT"
+
+    export GRPC_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="grpc")].nodePort}')
+    echo "Set port $GRPC_PORT"
 }
 
 upgrade() {

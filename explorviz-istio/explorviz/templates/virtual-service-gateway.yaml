@@ -17,6 +17,13 @@ spec:
           number: 9000
   http:
   - match:
+    - port: 50051
+    route:
+    - destination:
+        host: {{ template "explorviz.host" (dict "Release" .Release "component" .Values.grpcService) }}
+        port:
+          number: 50051
+  - match:
     - uri:
         prefix: "/v1/tokens"
     - uri:
@@ -71,3 +78,7 @@ spec:
         port:
           number: 8000
         host: {{ template "explorviz.host" (dict "Release" .Release "component" .Values.frontend) }}
+    # - destination:
+    #     host: {{ template "explorviz.host" (dict "Release" .Release "component" .Values.grpcService) }}
+    #     port:
+    #       number: 50051
