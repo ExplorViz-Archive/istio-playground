@@ -28,3 +28,25 @@ cd explorviz-istio
 # Install explorviz via helm
 ./istiow install
 ```
+
+## GRPC Example
+
+An example gRPC server is deployed alongside Explorviz. The following steps describe how to start a corresponding client.
+
+
+### Initial setup
+```
+# Clone the grpc-java example git repository
+git clone -b v1.32.1 https://github.com/grpc/grpc-java.git $HOME/grpc-java
+
+# Compile and install the sources
+cd $HOME/grpc-java/examples
+./gradlew installDist
+cd -
+```
+
+### Run client
+Be sure to set the needed environment Variables
+```
+$HOME/grpc-java/examples/build/install/examples/bin/hello-world-client SomeUsername $EXPLORVIZ_URL:$GRPC_PORT
+```

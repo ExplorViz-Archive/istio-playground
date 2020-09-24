@@ -3,6 +3,8 @@
 # Declare variables to be passed into your templates.
 
 port: 80
+grpcPort: 50051
+monitoringPort: 8060
 
 broadcastService:
   name: broadcast-service
@@ -49,7 +51,7 @@ landscapeService:
 
 grpcService:
   name: grpc-service
-  image: hostname:latest
+  image: grpc/java-example-hostname
   port: 50051
   kafka:
     topic: 

@@ -12,3 +12,9 @@ if ! grep "{{ include "explorviz.hostUrl" . }}" /etc/hosts; then echo -e "$ingre
 
 2. Access the frontend url:
 http://{{ include "explorviz.hostUrl" . }}:{{ .Values.port }}
+
+3. Set environment variables:
+export EXPLORVIZ_URL={{ include "explorviz.hostUrl" . }}
+export HTTP_PORT={{ .Values.port }}
+export GRPC_PORT={{ .Values.grpcPort }}
+export MONITORING_PORT={{ .Values.monitoringPort }}
