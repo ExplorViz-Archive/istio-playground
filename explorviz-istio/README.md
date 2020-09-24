@@ -22,6 +22,12 @@ cd explorviz-istio
 # Create kind cluster
 ./istiow setup-kind
 
+# Build Images with readiness probes
+git clone -b explorviz-1.5-istio https://github.com/ExplorViz/explorviz-backend.git $HOME/explorviz-backend
+cd explorviz-backend
+./push-images-to-kind.sh
+cd -
+
 # Install istio inside of the kind cluster
 ./istiow setup-istio
 
