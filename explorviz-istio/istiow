@@ -57,6 +57,9 @@ EOF
 setup-istio() {
     kiali-secret
     istioctl install -f explorviz-istio.yaml
+    
+    # install addons
+    kubectl apply -f ${ISTIO_HOME}/samples/addons -n istio-system
 }
 
 setup-minikube() {
@@ -88,21 +91,29 @@ EOF
 
     helm dependency update explorviz
 
-    export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
-
+    get_ports
     helm install explorviz-istio --namespace $NAMESPACE --set port=$INGRESS_PORT explorviz
-
-    export MONITORING_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="tcp-monitoring")].nodePort}')
-    echo "Set port in kieker.monitoring*.properties to: Set kieker.monitoring.writer.tcp.SingleSocketTcpWriter.port=$MONITORING_PORT"
-
-    export GRPC_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="grpc")].nodePort}')
-    echo "Set port $GRPC_PORT"
 }
 
 upgrade() {
-    export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
+    get_ports
 
     helm upgrade explorviz-istio --namespace $NAMESPACE --set port=$INGRESS_PORT explorviz
+
+}
+
+get_ports() {
+    echo "#############################################################"
+    echo "#############################################################"
+    export INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
+    echo "## Http2 port $INGRESS_PORT"
+
+    export MONITORING_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="tcp-monitoring")].nodePort}')
+    echo "## Set port in kieker.monitoring*.properties to: Set kieker.monitoring.writer.tcp.SingleSocketTcpWriter.port=$MONITORING_PORT"
+
+    export GRPC_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="grpc")].nodePort}')
+    echo "## Grpc port $GRPC_PORT"
+    echo "#############################################################"
 }
 
 delete() {
@@ -113,7 +124,7 @@ template() {
     helm template explorviz --output-dir ../tmp
 }
 
-if type -t $1; then
+if type -t $1 > /dev/null; then
     $1
 else
     echo "$1 is not a function"
